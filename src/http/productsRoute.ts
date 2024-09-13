@@ -1,23 +1,28 @@
 import { Router } from "express";
+import { ProductController } from "../features/products/product.controller";
+
+const productController = new ProductController();
 
 const productsRoute = Router();
 
-productsRoute.get("/", (req, res) => {
-  // listar todos os produtos de um restaurante
+productsRoute.get("/", async (req, res) => {
+  const { status, payload } = await productController.getAll(req);
+  res.status(status).json(payload);
 });
 
-productsRoute.post("/", (req, res) => {
-  // criar um produto de um restaurante
+productsRoute.post("/", async (req, res) => {
+  const { status, payload } = await productController.postOne(req);
+  res.status(status).json(payload);
 });
 
-productsRoute.patch("/:id", (req, res) => {
-  // alterar um produto de um restaurante
+productsRoute.patch("/:id", async (req, res) => {
+  const { status, payload } = await productController.patchOne(req);
+  res.status(status).json(payload);
 });
 
-productsRoute.delete("/:id", (req, res) => {
-  // excluir um produto de um restaurante
+productsRoute.delete("/:id", async (req, res) => {
+  const { status, payload } = await productController.deleteOne(req);
+  res.status(status).json(payload);
 });
-
-productsRoute.use("/:id/produtos");
 
 export default productsRoute;

@@ -1,28 +1,37 @@
 import { Router } from "express";
-import productsRoute from "./produtosRoute";
+import { RestaurantController } from "../features/restaurants/restaurant.controller";
+
+import productsRoute from "./productsRoute";
+
+const restaurantController = new RestaurantController();
 
 const restaurantsRoute = Router();
 
-restaurantsRoute.get("/", (req, res) => {
-  // listar todos os restaurantes
+restaurantsRoute.get("/", async (req, res) => {
+  const { status, payload } = await restaurantController.getAll(req);
+  res.status(status).json(payload);
 });
 
-restaurantsRoute.post("/", (req, res) => {
-  // cadastrar novo restaurante
+restaurantsRoute.post("/", async (req, res) => {
+  const { status, payload } = await restaurantController.postOne(req);
+  res.status(status).json(payload);
 });
 
-restaurantsRoute.get("/:id", (req, res) => {
-  // listar dados de um restaurante
+restaurantsRoute.get("/:id", async (req, res) => {
+  const { status, payload } = await restaurantController.getOne(req);
+  res.status(status).json(payload);
 });
 
-restaurantsRoute.patch("/:id", (req, res) => {
-  // alterar dados de um restaurante
+restaurantsRoute.patch("/:id", async (req, res) => {
+  const { status, payload } = await restaurantController.patchOne(req);
+  res.status(status).json(payload);
 });
 
-restaurantsRoute.delete("/:id", (req, res) => {
-  // excluir um restaurante
+restaurantsRoute.delete("/:id", async (req, res) => {
+  const { status, payload } = await restaurantController.deleteOne(req);
+  res.status(status).json(payload);
 });
 
-restaurantsRoute.use("/:id/produtos", productsRoute);
+restaurantsRoute.use("/:restaurantId/produtos", productsRoute);
 
 export default restaurantsRoute;

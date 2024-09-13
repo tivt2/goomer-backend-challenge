@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use(api);
+app.use("api", api);
 
 app.listen(PORT, () => {
   console.log(`Server is listening at port: [${PORT}]`);
