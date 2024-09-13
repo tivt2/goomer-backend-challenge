@@ -1,5 +1,5 @@
 import express from "express";
-import api from "./http/apiRoutes";
+import api from "./http/apiRoute";
 
 import dotenv from "dotenv";
 dotenv.config();
