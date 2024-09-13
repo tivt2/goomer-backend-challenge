@@ -1,6 +1,7 @@
-import { TimeWindow } from "../../commom/timeWindow.type";
+import { WeeklyWindow } from "../../commom/weeklyWindow.type";
 
 export type PublicProduct = {
+  id: string;
   name: string;
   price: number;
   category: string;
@@ -8,12 +9,11 @@ export type PublicProduct = {
   promotion: {
     description: string;
     price: number;
-    operation: TimeWindow;
-  };
+    operation: WeeklyWindow[];
+  } | null;
 };
 
 export type Product = {
-  id: string;
   createdAt: Date;
   updatedAt: Date;
 } & PublicProduct;

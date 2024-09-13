@@ -1,4 +1,4 @@
-import { ApiRespose } from "./apiResponse";
+import { ApiResponse } from "./apiResponse";
 
 export class ApiError extends Error {
   constructor(
@@ -8,7 +8,7 @@ export class ApiError extends Error {
     super(message);
   }
 
-  get response(): ApiRespose {
+  get response(): ApiResponse {
     return {
       status: this.status,
       payload: { error: this.message },

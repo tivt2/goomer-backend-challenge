@@ -1,14 +1,14 @@
-import { TimeWindow } from "../../commom/timeWindow.type";
+import { WeeklyWindow } from "../../commom/weeklyWindow.type";
 
 export type PublicRestaurant = {
+  id: string;
   name: string;
   address: string;
   picture: string;
-  operation: TimeWindow;
+  operations: WeeklyWindow[];
 };
 
 export type Restaurant = {
-  id: string;
   createdAt: Date;
   updatedAt: Date;
 } & PublicRestaurant;
