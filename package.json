@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx vitest",
+    "test:docker": "docker compose run --build test && docker compose down && docker container prune -f && docker rmi app-test",
     "build": "rm -rf ./dist && npx tsc",
     "start": "npm run build && node ./dist/index.js"
   },

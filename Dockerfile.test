@@ -1,0 +1,11 @@
+FROM node:22.3.0-alpine
+
+RUN apk add --no-cache bash
+
+WORKDIR /home/app
+
+COPY . .
+
+RUN npm install --include=dev
+
+CMD node migrate.js && npx vitest run

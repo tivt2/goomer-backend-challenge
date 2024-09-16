@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS restaurants (
 );
 
 CREATE TYPE productPromotion AS (
-    description TEXT NOT NULL,
-    price INTEGER NOT NULL,
-    operations weeklyWindow[] NOT NULL
+    description TEXT,
+    price INTEGER,
+    operations weeklyWindow[]
 );
 
 CREATE TABLE IF NOT EXISTS products (
