@@ -1,6 +1,6 @@
 export type WeeklyWindow = {
-  startDay: string;
-  endDay: string;
-  startTime: string;
-  endTime: string;
+  start_day: string;
+  end_day: string;
+  start_time: string;
+  end_time: string;
 };

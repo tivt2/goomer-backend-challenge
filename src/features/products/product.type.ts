@@ -9,11 +9,11 @@ export type PublicProduct = {
   promotion: {
     description: string;
     price: number;
-    operation: WeeklyWindow[];
+    operations: WeeklyWindow[];
   } | null;
 };
 
 export type Product = {
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 } & PublicProduct;

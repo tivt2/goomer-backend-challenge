@@ -1,9 +1,11 @@
 import { Router } from "express";
 import { RestaurantController } from "../features/restaurants/restaurant.controller";
+import { PGRestaurantRepository } from "../data/pg/pgRestaurant.repository";
 
 import productsRoute from "./productsRoute";
 
-const restaurantController = new RestaurantController();
+const pgRestaurantRepository = new PGRestaurantRepository();
+const restaurantController = new RestaurantController(pgRestaurantRepository);
 
 const restaurantsRoute = Router();
 

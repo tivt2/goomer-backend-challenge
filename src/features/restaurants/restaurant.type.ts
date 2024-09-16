@@ -9,6 +9,6 @@ export type PublicRestaurant = {
 };
 
 export type Restaurant = {
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 } & PublicRestaurant;

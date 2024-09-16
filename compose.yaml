@@ -9,15 +9,15 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     healthcheck:
       test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-      interval: 5s
-      timeout: 3s
+      interval: 2s
+      timeout: 2s
       retries: 5
 
   test:
     build:
       context: .
       dockerfile: Dockerfile.test
-    image: app-test
+    image: app-test:latest
     depends_on:
       - database
     environment:
