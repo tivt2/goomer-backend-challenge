@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { ProductController } from "../features/products/product.controller";
+import { PGProductRepository } from "../data/pg/pgProduct.repository";
 
-const productController = new ProductController();
+const pgProductRepository = new PGProductRepository();
+const productController = new ProductController(pgProductRepository);
 
 const productsRoute = Router();
 

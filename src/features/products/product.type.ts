@@ -6,11 +6,14 @@ export type PublicProduct = {
   price: number;
   category: string;
   picture: string;
-  promotion: {
-    description: string;
-    price: number;
-    operations: WeeklyWindow[];
-  } | null;
+  promotion: Omit<ProductPromotion, "id"> | null;
+};
+
+export type ProductPromotion = {
+  id: string;
+  description: string;
+  price: number;
+  operations: WeeklyWindow[];
 };
 
 export type Product = {

@@ -8,6 +8,7 @@ import { env } from "process";
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
 import api from "./apiRoute";
 import { PublicRestaurant } from "../features/restaurants/restaurant.type";
+import { PublicProduct } from "../features/products/product.type";
 
 const PORT = Number(env.PORT || 3000);
 
@@ -37,21 +38,22 @@ beforeAll(async () => {
   expect(payload).toEqual({ message: "pong" });
 });
 
+const restaurantEntry: PublicRestaurant = {
+  id: "temp_id",
+  name: "foo_name",
+  address: "foo_address",
+  picture: "foo_picture",
+  operations: [
+    {
+      start_day: "monday",
+      end_day: "monday",
+      start_time: "11:00",
+      end_time: "16:00",
+    },
+  ],
+};
+
 describe("/api/restaurantes endpoint tests", () => {
-  const restaurantEntry: PublicRestaurant = {
-    id: "temp_id",
-    name: "foo_name",
-    address: "foo_address",
-    picture: "foo_picture",
-    operations: [
-      {
-        start_day: "monday",
-        end_day: "monday",
-        start_time: "11:00",
-        end_time: "16:00",
-      },
-    ],
-  };
   test("GET:/restaurantes", async () => {
     const response = await sendRequest("/restaurantes", "GET");
     const payload = await response.json();
@@ -123,37 +125,103 @@ describe("/api/restaurantes endpoint tests", () => {
   });
 });
 
+const productEntry: PublicProduct = {
+  id: "temp_id",
+  name: "foo_product",
+  price: 100,
+  category: "foo_category",
+  picture: "foo_prod_pic",
+  promotion: {
+    description: "foo_description",
+    price: 80,
+    operations: [
+      {
+        start_day: "monday",
+        end_day: "monday",
+        start_time: "08:00",
+        end_time: "23:59",
+      },
+    ],
+  },
+};
+
 describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
-  const baseEndPoint = `/restaurantes/${"temp_restaurantId"}`;
+  const baseEndPoint = `/restaurantes/${restaurantEntry.id}`;
+
   test("GET:/produtos", async () => {
     const response = await sendRequest(baseEndPoint + "/produtos", "GET");
+    const payload = await response.json();
+
     expect(response.status).toBe(200);
+    expect(payload.products).toBeTruthy();
+    expect(payload.products).toEqual([]);
   });
 
   test("POST:/produtos", async () => {
     const response = await sendRequest(baseEndPoint + "/produtos", "POST", {
-      restaurant: {},
+      product: productEntry,
     });
+    const payload = await response.json();
+
     expect(response.status).toBe(200);
+    expect(payload.product).toBeTruthy();
+    productEntry.id = payload.product.id;
+    expect(payload.product).toEqual(productEntry);
   });
 
   test("PATCH:/produtos/:id", async () => {
+    productEntry.name = "updated_foo_product";
+    productEntry.price = 200;
+    productEntry.category = "updated_foo_category";
+    productEntry.picture = "updated_foo_prod_pic";
+    if (!!productEntry.promotion) {
+      productEntry.promotion.description = "updated_foo_description";
+      productEntry.promotion.price = 150;
+      productEntry.promotion.operations.push({
+        start_day: "tuesday",
+        end_day: "sunday",
+        start_time: "12:00",
+        end_time: "20:00",
+      });
+    } else {
+      productEntry.promotion = {
+        description: "updated_foo_description",
+        price: 150,
+        operations: [
+          {
+            start_day: "tuesday",
+            end_day: "sunday",
+            start_time: "12:00",
+            end_time: "20:00",
+          },
+        ],
+      };
+    }
+
     const response = await sendRequest(
-      `${baseEndPoint}/produtos/${"temp_id"}`,
+      `${baseEndPoint}/produtos/${productEntry.id}`,
       "PATCH",
       {
-        updateData: {},
+        updateData: productEntry,
       },
     );
+    const payload = await response.json();
+
     expect(response.status).toBe(200);
+    expect(payload.product).toBeTruthy();
+    expect(payload.product).toEqual(productEntry);
   });
 
   test("DELETE:/produtos/:id", async () => {
     const response = await sendRequest(
-      `${baseEndPoint}/produtos/${"temp_id"}`,
+      `${baseEndPoint}/produtos/${productEntry.id}`,
       "DELETE",
     );
+    const payload = await response.json();
+
     expect(response.status).toBe(200);
+    expect(payload.product).toBeTruthy();
+    expect(payload.product).toEqual(productEntry);
   });
 });
 

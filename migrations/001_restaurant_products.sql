@@ -48,9 +48,9 @@ CREATE TABLE IF NOT EXISTS product_promotion_operations (
     start_time VARCHAR(5),
     end_time VARCHAR(5),
 
-    promotion_id UUID REFERENCES product_promotion(id) ON DELETE CASCADE
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS operations_restaurant_id_idx ON restaurant_operations(restaurant_id);
 CREATE INDEX IF NOT EXISTS promotion_product_id_idx ON product_promotion(product_id);
-CREATE INDEX IF NOT EXISTS operations_promotion_id_idx ON product_promotion_operations(promotion_id);
+CREATE INDEX IF NOT EXISTS operations_product_id_idx ON product_promotion_operations(product_id);
