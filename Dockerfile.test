@@ -4,6 +4,4 @@ WORKDIR /home/app
 
 COPY . .
 
-RUN npm install --include=dev
-
-CMD node migrate.js && npx vitest run
+CMD node migrate.js down && node migrate.js up && npx vitest run

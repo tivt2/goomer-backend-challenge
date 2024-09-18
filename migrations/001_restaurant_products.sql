@@ -1,3 +1,4 @@
+--UP
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS restaurants (
@@ -54,3 +55,16 @@ CREATE TABLE IF NOT EXISTS product_promotion_operations (
 CREATE INDEX IF NOT EXISTS operations_restaurant_id_idx ON restaurant_operations(restaurant_id);
 CREATE INDEX IF NOT EXISTS promotion_product_id_idx ON product_promotion(product_id);
 CREATE INDEX IF NOT EXISTS operations_product_id_idx ON product_promotion_operations(product_id);
+
+--DOWN
+DROP INDEX IF EXISTS operations_restaurant_id_idx;
+DROP INDEX IF EXISTS promotion_product_id_idx;
+DROP INDEX IF EXISTS operations_product_id_idx;
+
+DROP TABLE IF EXISTS product_promotion_operations;
+DROP TABLE IF EXISTS product_promotion;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS restaurant_operations;
+DROP TABLE IF EXISTS restaurants;
+
+DROP EXTENSION IF EXISTS "uuid-ossp";

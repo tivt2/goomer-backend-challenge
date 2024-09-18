@@ -12,17 +12,23 @@ services:
       interval: 2s
       timeout: 2s
       retries: 5
+    networks:
+      - database-network
 
   test:
     build:
       context: .
       dockerfile: Dockerfile.test
     image: app-test:latest
-    depends_on:
-      - database
     environment:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
+    networks:
+      - database-network
+
+networks:
+  database-network:
+    driver: bridge
