@@ -34,7 +34,7 @@ beforeAll(async () => {
 
   const response = await sendRequest("/ping", "GET");
   const payload = await response.json();
-  expect(response.status).toBe(200);
+  expect(response.status, payload.error).toBe(200);
   expect(payload).toEqual({ message: "pong" });
 });
 
@@ -58,7 +58,7 @@ describe("/api/restaurantes endpoint tests", () => {
     const response = await sendRequest("/restaurantes", "GET");
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.restaurants).toBeTruthy();
     expect(payload.restaurants).toEqual([]);
   });
@@ -69,7 +69,7 @@ describe("/api/restaurantes endpoint tests", () => {
     });
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.restaurant).toBeTruthy();
     restaurantEntry.id = payload.restaurant.id;
     expect(payload.restaurant).toEqual(restaurantEntry);
@@ -82,12 +82,12 @@ describe("/api/restaurantes endpoint tests", () => {
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.restaurant).toBeTruthy();
     expect(payload.restaurant).toEqual(restaurantEntry);
   });
 
-  test("PATCH:/restaurantes/:id", async () => {
+  test("PATCH:/restaurantes/:id update all restaurant data", async () => {
     restaurantEntry.name = "foo_restaurant_updated";
     restaurantEntry.address = "foo_address_updated";
     restaurantEntry.picture = "foo_picture_updated";
@@ -107,7 +107,52 @@ describe("/api/restaurantes endpoint tests", () => {
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.restaurant).toBeTruthy();
+    expect(payload.restaurant).toEqual(restaurantEntry);
+  });
+
+  test("PATCH:/restaurantes/:id update only operations data", async () => {
+    restaurantEntry.operations.push({
+      start_day: "saturday",
+      end_day: "saturday",
+      start_time: "18:00",
+      end_time: "20:00",
+    });
+
+    const response = await sendRequest(
+      `/restaurantes/${restaurantEntry.id}`,
+      "PATCH",
+      {
+        updateData: { operations: restaurantEntry.operations },
+      },
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.restaurant).toBeTruthy();
+    expect(payload.restaurant).toEqual(restaurantEntry);
+  });
+
+  test("PATCH:/restaurantes/:id update only restaurant data", async () => {
+    restaurantEntry.name = "another_foo_restaurant_updated";
+    restaurantEntry.address = "another_foo_address_updated";
+    restaurantEntry.picture = "another_foo_picture_updated";
+
+    const response = await sendRequest(
+      `/restaurantes/${restaurantEntry.id}`,
+      "PATCH",
+      {
+        updateData: {
+          name: restaurantEntry.name,
+          address: restaurantEntry.address,
+          picture: restaurantEntry.picture,
+        },
+      },
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
     expect(payload.restaurant).toBeTruthy();
     expect(payload.restaurant).toEqual(restaurantEntry);
   });
@@ -119,7 +164,7 @@ describe("/api/restaurantes endpoint tests", () => {
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.restaurant).toBeTruthy();
     expect(payload.restaurant).toEqual(restaurantEntry);
   });
@@ -131,18 +176,7 @@ const productEntry: PublicProduct = {
   price: 100,
   category: "foo_category",
   picture: "foo_prod_pic",
-  promotion: {
-    description: "foo_description",
-    price: 80,
-    operations: [
-      {
-        start_day: "monday",
-        end_day: "monday",
-        start_time: "08:00",
-        end_time: "23:59",
-      },
-    ],
-  },
+  promotion: null,
 };
 
 describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
@@ -152,7 +186,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     const response = await sendRequest(baseEndPoint + "/produtos", "GET");
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.products).toBeTruthy();
     expect(payload.products).toEqual([]);
   });
@@ -163,40 +197,100 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     });
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.product).toBeTruthy();
     productEntry.id = payload.product.id;
     expect(payload.product).toEqual(productEntry);
   });
 
-  test("PATCH:/produtos/:id", async () => {
-    productEntry.name = "updated_foo_product";
-    productEntry.price = 200;
-    productEntry.category = "updated_foo_category";
-    productEntry.picture = "updated_foo_prod_pic";
-    if (!!productEntry.promotion) {
-      productEntry.promotion.description = "updated_foo_description";
-      productEntry.promotion.price = 150;
-      productEntry.promotion.operations.push({
-        start_day: "tuesday",
-        end_day: "sunday",
-        start_time: "12:00",
-        end_time: "20:00",
-      });
-    } else {
-      productEntry.promotion = {
-        description: "updated_foo_description",
-        price: 150,
-        operations: [
-          {
-            start_day: "tuesday",
-            end_day: "sunday",
-            start_time: "12:00",
-            end_time: "20:00",
-          },
-        ],
-      };
-    }
+  test("PATCH:/produtos/:id add product promotion", async () => {
+    productEntry.promotion = {
+      description: "new_foo_description",
+      price: 120,
+      operations: [
+        {
+          start_day: "monday",
+          end_day: "monday",
+          start_time: "10:00",
+          end_time: "20:00",
+        },
+      ],
+    };
+
+    const response = await sendRequest(
+      `${baseEndPoint}/produtos/${productEntry.id}`,
+      "PATCH",
+      {
+        updateData: { promotion: productEntry.promotion },
+      },
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.product).toBeTruthy();
+    expect(payload.product).toEqual(productEntry);
+  });
+
+  test("PATCH:/produtos/:id update only promotion operations", async () => {
+    productEntry.promotion!.operations.push({
+      start_day: "tuesday",
+      end_day: "sunday",
+      start_time: "12:00",
+      end_time: "20:00",
+    });
+
+    const response = await sendRequest(
+      `${baseEndPoint}/produtos/${productEntry.id}`,
+      "PATCH",
+      {
+        updateData: { promotion: productEntry.promotion },
+      },
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.product).toBeTruthy();
+    expect(payload.product).toEqual(productEntry);
+  });
+
+  test("PATCH:/produtos/:id update only product data", async () => {
+    productEntry.name = "foo_product_update";
+    productEntry.price = 500;
+    productEntry.category = "foo_category_update";
+    productEntry.picture = "foo_picture_update";
+
+    const response = await sendRequest(
+      `${baseEndPoint}/produtos/${productEntry.id}`,
+      "PATCH",
+      {
+        updateData: {
+          name: productEntry.name,
+          price: productEntry.price,
+          category: productEntry.category,
+          picture: productEntry.picture,
+        },
+      },
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.product).toBeTruthy();
+    expect(payload.product).toEqual(productEntry);
+  });
+
+  test("PATCH:/produtos/:id update all product data", async () => {
+    productEntry.name = "again_foo_product_update";
+    productEntry.price = 300;
+    productEntry.category = "again_foo_category_update";
+    productEntry.picture = "again_foo_picture_update";
+    productEntry.promotion!.description = "again_foo_desc_update";
+    productEntry.promotion!.price = 150;
+    productEntry.promotion!.operations.push({
+      start_day: "saturday",
+      end_day: "saturday",
+      start_time: "10:00",
+      end_time: "12:00",
+    });
 
     const response = await sendRequest(
       `${baseEndPoint}/produtos/${productEntry.id}`,
@@ -207,7 +301,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.product).toBeTruthy();
     expect(payload.product).toEqual(productEntry);
   });
@@ -219,7 +313,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(200);
+    expect(response.status, payload.error).toBe(200);
     expect(payload.product).toBeTruthy();
     expect(payload.product).toEqual(productEntry);
   });

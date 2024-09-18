@@ -58,7 +58,7 @@ WITH updated_product AS (
   SET name=COALESCE($2, name),
       price=COALESCE($3, price),
       category=COALESCE($4, category),
-      picture=COALESCE($5, picture),
+      picture=COALESCE($5, picture)
   WHERE id=$1
   RETURNING *
 )
@@ -93,10 +93,12 @@ WITH updated_product AS (
   WHERE id=$1
   RETURNING *
 ), updated_promotion AS (
-  UPDATE product_promotion
-  SET description=COALESCE($6, description),
-    price=COALESCE($7, price)
-  WHERE product_id=$1
+  INSERT INTO product_promotion (product_id, description, price)
+  VALUES ($1, $6, $7)
+  ON CONFLICT (product_id)
+  DO UPDATE
+  SET description=$6,
+    price=$7
   RETURNING *
 )
 SELECT p.id, p.name, p.price, p.category, p.picture,
@@ -182,7 +184,7 @@ export class PGProductRepository implements ProductRepository {
 
       return [null, products.rows];
     } catch (error) {
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -213,7 +215,7 @@ export class PGProductRepository implements ProductRepository {
 
         return [null, { ...productRes.rows[0], promotion: null }];
       } catch (error) {
-        return [new ApiError(500, "Something wrong during transaction"), null];
+        return [new ApiError(500, (error as Error).stack), null];
       } finally {
         client.release();
       }
@@ -261,7 +263,7 @@ export class PGProductRepository implements ProductRepository {
       ];
     } catch (error) {
       await client.query("ROLLBACK;");
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -292,7 +294,7 @@ export class PGProductRepository implements ProductRepository {
 
         return [null, productRes.rows[0]];
       } catch (error) {
-        return [new ApiError(500, "Something wrong during transaction"), null];
+        return [new ApiError(500, (error as Error).stack), null];
       } finally {
         client.release();
       }
@@ -308,18 +310,6 @@ export class PGProductRepository implements ProductRepository {
         const productRes = await client.query(selectOnlyProductQuery, [id]);
 
         product = { ...productRes.rows[0], promotion: null };
-      } else if (!promotion.operations) {
-        const productRes = await client.query(updateProductAndPromotionQuery, [
-          id,
-          name,
-          price,
-          category,
-          picture,
-          promotion.description,
-          promotion.price,
-        ]);
-
-        product = productRes.rows[0];
       } else {
         await client.query(deletePromotionOperationsQuery, [id]);
 
@@ -353,7 +343,7 @@ export class PGProductRepository implements ProductRepository {
       return [null, product];
     } catch (error) {
       await client.query("ROLLBACK;");
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -372,8 +362,7 @@ export class PGProductRepository implements ProductRepository {
 
       return [null, products.rows[0]];
     } catch (error) {
-      console.log(error);
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }

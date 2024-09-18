@@ -36,9 +36,10 @@ export class RestaurantController {
   }
 
   async patchOne(req: any): Promise<ApiResponse> {
-    const [error, restaurant] = await this.restaurantRepository.updateOne(
-      req.body.updateData,
-    );
+    const [error, restaurant] = await this.restaurantRepository.updateOne({
+      id: req.params.id,
+      ...req.body.updateData,
+    });
     if (error !== null) {
       return error.response;
     }

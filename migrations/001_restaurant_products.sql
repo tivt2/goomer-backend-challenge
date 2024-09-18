@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS product_promotion (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE
+    product_id UUID UNIQUE REFERENCES products(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS product_promotion_operations (

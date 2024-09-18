@@ -55,7 +55,7 @@ WITH updated_restaurant AS (
     address=COALESCE($3, address),
     picture=COALESCE($4, picture)
   WHERE id=$1
-  RETURNING id, name, address, picture
+  RETURNING *
 )
 SELECT r.id, r.name, r.address, r.picture,
 json_agg(json_build_object(
@@ -77,11 +77,11 @@ const deleteRestaurantQuery = `
 WITH deleted_restaurant AS (
   DELETE FROM restaurants
   WHERE id=$1
-  RETURNING id, name, address, picture
+  RETURNING *
 ), deleted_operations AS (
   DELETE FROM restaurant_operations
   WHERE restaurant_id=$1
-  RETURNING restaurant_id, start_day, end_day, start_time, end_time
+  RETURNING *
 )
 SELECT r.id, r.name, r.address, r.picture,
 json_agg(json_build_object(
@@ -107,7 +107,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
 
       return [null, restaurants.rows];
     } catch (error) {
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -126,7 +126,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
 
       return [null, restaurant.rows[0]];
     } catch (error) {
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -174,7 +174,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
       ];
     } catch (error) {
       await client.query("ROLLBACK;");
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -201,7 +201,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
 
         return [null, restaurant.rows[0]];
       } catch (error) {
-        return [new ApiError(500, "Something wrong during transaction"), null];
+        return [new ApiError(500, (error as Error).stack), null];
       } finally {
         client.release();
       }
@@ -251,7 +251,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
       ];
     } catch (error) {
       await client.query("ROLLBACK;");
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
@@ -273,7 +273,7 @@ export class PGRestaurantRepository implements RestaurantRepository {
       return [null, restaurant.rows[0]];
     } catch (error) {
       console.log(error);
-      return [new ApiError(500, "Something wrong during transaction"), null];
+      return [new ApiError(500, (error as Error).stack), null];
     } finally {
       client.release();
     }
