@@ -176,10 +176,23 @@ const productEntry: PublicProduct = {
 };
 
 describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
-  const baseEndPoint = `/restaurantes/${restaurantEntry.id}`;
+  let baseEndPoint: string;
+
+  beforeAll(async () => {
+    const response = await sendRequest(
+      "/restaurantes",
+      "POST",
+      restaurantEntry,
+    );
+    const payload = await response.json();
+
+    expect(response.status, payload.error).toBe(200);
+    expect(payload.restaurant).toBeTruthy();
+    baseEndPoint = `/restaurantes/${payload.restaurant.id}`;
+  });
 
   test("GET:/produtos", async () => {
-    const response = await sendRequest(baseEndPoint + "/produtos", "GET");
+    const response = await sendRequest(`${baseEndPoint}/produtos`, "GET");
     const payload = await response.json();
 
     expect(response.status, payload.error).toBe(200);
@@ -188,9 +201,11 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
   });
 
   test("POST:/produtos", async () => {
-    const response = await sendRequest(baseEndPoint + "/produtos", "POST", {
-      product: productEntry,
-    });
+    const response = await sendRequest(
+      baseEndPoint + "/produtos",
+      "POST",
+      productEntry,
+    );
     const payload = await response.json();
 
     expect(response.status, payload.error).toBe(200);
@@ -216,9 +231,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     const response = await sendRequest(
       `${baseEndPoint}/produtos/${productEntry.id}`,
       "PATCH",
-      {
-        updateData: { promotion: productEntry.promotion },
-      },
+      { promotion: productEntry.promotion },
     );
     const payload = await response.json();
 
@@ -238,9 +251,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     const response = await sendRequest(
       `${baseEndPoint}/produtos/${productEntry.id}`,
       "PATCH",
-      {
-        updateData: { promotion: productEntry.promotion },
-      },
+      { promotion: productEntry.promotion },
     );
     const payload = await response.json();
 
@@ -259,12 +270,10 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
       `${baseEndPoint}/produtos/${productEntry.id}`,
       "PATCH",
       {
-        updateData: {
-          name: productEntry.name,
-          price: productEntry.price,
-          category: productEntry.category,
-          picture: productEntry.picture,
-        },
+        name: productEntry.name,
+        price: productEntry.price,
+        category: productEntry.category,
+        picture: productEntry.picture,
       },
     );
     const payload = await response.json();
@@ -291,9 +300,7 @@ describe("/api/restaurantes/:restaurantId/produtos endpoint tests", () => {
     const response = await sendRequest(
       `${baseEndPoint}/produtos/${productEntry.id}`,
       "PATCH",
-      {
-        updateData: productEntry,
-      },
+      productEntry,
     );
     const payload = await response.json();
 

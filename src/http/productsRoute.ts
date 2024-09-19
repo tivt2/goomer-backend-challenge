@@ -1,11 +1,16 @@
 import { Router } from "express";
 import { ProductController } from "../features/products/product.controller";
 import { PGProductRepository } from "../data/pg/pgProduct.repository";
+import { ZodProductValidator } from "../validation/zod/zodProduct.validator";
 
+const zodProductValidator = new ZodProductValidator();
 const pgProductRepository = new PGProductRepository();
-const productController = new ProductController(pgProductRepository);
+const productController = new ProductController(
+  pgProductRepository,
+  zodProductValidator,
+);
 
-const productsRoute = Router();
+const productsRoute = Router({ mergeParams: true });
 
 productsRoute.get("/", async (req, res) => {
   const { status, payload } = await productController.getAll(req);

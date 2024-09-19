@@ -10,7 +10,7 @@ import z from "zod";
 import { weeklyWindowSchema } from "./zodWeeklyWindow.schema";
 
 export class ZodProductValidator implements ProductValidator {
-  private getProductSchema = z.object({
+  private getProductsSchema = z.object({
     params: z.object({
       restaurantId: z
         .string()
@@ -77,7 +77,7 @@ export class ZodProductValidator implements ProductValidator {
   });
 
   validateGetProducts(req: any): [ApiError, null] | [null, GetProductsDTO] {
-    const { success, error, data } = this.getProductSchema.safeParse(req);
+    const { success, error, data } = this.getProductsSchema.safeParse(req);
     if (!success) {
       return [
         new ApiError(500, error.errors.map((err) => err.message).join(", ")),
