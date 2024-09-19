@@ -1,0 +1,585 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "goomer-backend-challenge",
+    "description": "This API is a backend challenge by goomer used only for practice purpose",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "WeeklyWindow": {
+        "properties": {
+          "start_day": {
+            "type": "string"
+          },
+          "end_day": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string"
+          },
+          "end_time": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "start_day": "monday",
+          "end_day": "tuesday",
+          "start_time": "10:00",
+          "end_time": "20:00"
+        }
+      },
+      "Operations": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/WeeklyWindow"
+        },
+        "example": [
+          {
+            "start_day": "monday",
+            "end_day": "tuesday",
+            "start_time": "10:00",
+            "end_time": "20:00"
+          },
+          {
+            "start_day": "friday",
+            "end_day": "sunday",
+            "start_time": "12:00",
+            "end_time": "18:00"
+          }
+        ]
+      },
+      "Restaurant": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "BigBurger"
+          },
+          "address": {
+            "type": "string",
+            "example": "Avenida paulista, 1050 - Sao Paulo/SP"
+          },
+          "picture": {
+            "type": "string",
+            "example": "https://www.bigburger.com/picture/7161eb6f-0e4e-4b48-9e5c-cca4fe31bf5e"
+          },
+          "operations": {
+            "$ref": "#/components/schemas/Operations"
+          }
+        }
+      },
+      "RestaurantWithID": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "de7680e8-a25c-4187-8e6d-2e56c8401400"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/Restaurant"
+          }
+        ]
+      },
+      "ListOfRestaurants": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RestaurantWithID"
+        },
+        "example": [
+          {
+            "name": "BigBurger",
+            "address": "Avenida paulista, 1050 - Sao Paulo/SP",
+            "picture": "https://www.bigburger.com/picture/7161eb6f-0e4e-4b48-9e5c-cca4fe31bf5e",
+            "operations": [
+              {
+                "start_day": "monday",
+                "end_day": "tuesday",
+                "start_time": "10:00",
+                "end_time": "20:00"
+              },
+              {
+                "start_day": "friday",
+                "end_day": "sunday",
+                "start_time": "12:00",
+                "end_time": "18:00"
+              }
+            ]
+          }
+        ]
+      },
+      "Product": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Diner Burger"
+          },
+          "price": {
+            "type": "integer",
+            "example": 3990
+          },
+          "category": {
+            "type": "string",
+            "example": "hamburger"
+          },
+          "picture": {
+            "type": "string",
+            "example": "https://www.bigburger.com/diner-burger/picture/7161eb6f-0e4e-4b48-9e5c-cca4fe31bf5e"
+          },
+          "promotion": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "example": "Promoção de jantar, diner burger"
+              },
+              "price": {
+                "type": "integer",
+                "example": 3490
+              },
+              "operations": {
+                "$ref": "#/components/schemas/Operations"
+              }
+            }
+          }
+        }
+      },
+      "ProductWithID": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "de7680e8-a25c-4187-8e6d-2e56c8401400"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/Product"
+          }
+        ]
+      },
+      "ListOfProducts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProductWithID"
+        },
+        "example": [
+          {
+            "name": "BigBurger",
+            "price": 3990,
+            "category": "hamburger",
+            "picture": "https://www.bigburger.com/diner-burger/picture/7161eb6f-0e4e-4b48-9e5c-cca4fe31bf5e",
+            "promotion": {
+              "description": "Promoção de jantar, diner burger",
+              "price": 3490,
+              "operations": [
+                {
+                  "start_day": "monday",
+                  "end_day": "tuesday",
+                  "start_time": "10:00",
+                  "end_time": "20:00"
+                },
+                {
+                  "start_day": "friday",
+                  "end_day": "sunday",
+                  "start_time": "12:00",
+                  "end_time": "18:00"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "responses": {
+      "InternalError": {
+        "description": "API Internal error, should not occur frequently.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Something wrong happend, please try again later."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v1/ping": {
+      "get": {
+        "summary": "API life check",
+        "description": "This route is a way to check if the API is operational",
+        "responses": {
+          "200": {
+            "description": "Should receive message 'pong' if the API is operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "pong"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/restaurantes": {
+      "get": {
+        "summary": "List of restaurants",
+        "responses": {
+          "200": {
+            "description": "Should receive a list with all the registred restaurants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "restaurants": {
+                      "$ref": "#/components/schemas/ListOfRestaurants"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new restaurant",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restaurant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Should receive the newly registred restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "restaurant": {
+                      "$ref": "#/components/schemas/RestaurantWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/restaurantes/{id}": {
+      "get": {
+        "summary": "Get a single restaurant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Should receive a single registred restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "restaurant": {
+                      "$ref": "#/components/schemas/RestaurantWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Get a single restaurant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "At least one of the fields is necessary",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restaurant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Should receive the updated restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "restaurant": {
+                      "$ref": "#/components/schemas/RestaurantWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a single restaurant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Should receive the deleted restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "restaurant": {
+                      "$ref": "#/components/schemas/RestaurantWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/restaurantes/{restaurantId}/produtos": {
+      "get": {
+        "summary": "Get a restaurant list of products",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restaurantId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Should receive a list of products of a registred restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "products": {
+                      "$ref": "#/components/schemas/ListOfProducts"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a product to a restaurant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restaurantId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Should receive the newly added product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "product": {
+                      "$ref": "#/components/schemas/ProductWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/restaurantes/{restaurantId}/produtos/{id}": {
+      "patch": {
+        "summary": "Update a single product",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restaurantId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "At least one of the fields is necessary",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Should receive the updated product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "product": {
+                      "$ref": "#/components/schemas/ProductWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a single product",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restaurantId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4fb2f486-9c24-483f-be1d-c91bd9c68ea5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Should receive the deleted product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "product": {
+                      "$ref": "#/components/schemas/ProductWithID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  }
+}
