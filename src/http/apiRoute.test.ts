@@ -64,9 +64,11 @@ describe("/api/restaurantes endpoint tests", () => {
   });
 
   test("POST:/restaurantes", async () => {
-    const response = await sendRequest("/restaurantes", "POST", {
-      restaurant: restaurantEntry,
-    });
+    const response = await sendRequest(
+      "/restaurantes",
+      "POST",
+      restaurantEntry,
+    );
     const payload = await response.json();
 
     expect(response.status, payload.error).toBe(200);
@@ -101,9 +103,7 @@ describe("/api/restaurantes endpoint tests", () => {
     const response = await sendRequest(
       `/restaurantes/${restaurantEntry.id}`,
       "PATCH",
-      {
-        updateData: restaurantEntry,
-      },
+      restaurantEntry,
     );
     const payload = await response.json();
 
@@ -123,9 +123,7 @@ describe("/api/restaurantes endpoint tests", () => {
     const response = await sendRequest(
       `/restaurantes/${restaurantEntry.id}`,
       "PATCH",
-      {
-        updateData: { operations: restaurantEntry.operations },
-      },
+      { operations: restaurantEntry.operations },
     );
     const payload = await response.json();
 
@@ -143,11 +141,9 @@ describe("/api/restaurantes endpoint tests", () => {
       `/restaurantes/${restaurantEntry.id}`,
       "PATCH",
       {
-        updateData: {
-          name: restaurantEntry.name,
-          address: restaurantEntry.address,
-          picture: restaurantEntry.picture,
-        },
+        name: restaurantEntry.name,
+        address: restaurantEntry.address,
+        picture: restaurantEntry.picture,
       },
     );
     const payload = await response.json();

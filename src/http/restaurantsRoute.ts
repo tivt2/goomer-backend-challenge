@@ -1,11 +1,16 @@
 import { Router } from "express";
 import { RestaurantController } from "../features/restaurants/restaurant.controller";
 import { PGRestaurantRepository } from "../data/pg/pgRestaurant.repository";
+import { ZodRestaurantValidator } from "../validation/zod/zodRestaurant.validator";
 
 import productsRoute from "./productsRoute";
 
+const zodRestaurantValidator = new ZodRestaurantValidator();
 const pgRestaurantRepository = new PGRestaurantRepository();
-const restaurantController = new RestaurantController(pgRestaurantRepository);
+const restaurantController = new RestaurantController(
+  pgRestaurantRepository,
+  zodRestaurantValidator,
+);
 
 const restaurantsRoute = Router();
 

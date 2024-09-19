@@ -1,5 +1,5 @@
 import z from "zod";
-import { WeeklyWindowValidator } from "../weeklyWindow.validator";
+import { validateWeeklyWindow } from "../weeklyWindow.validator";
 
 const weekDays = [
   "monday",
@@ -25,7 +25,7 @@ export const weeklyWindowSchema = z
       .length(5, { message: "start_time must have format 'HH:mm'" }),
   })
   .superRefine((weekDay, ctx) => {
-    const errorMsg = WeeklyWindowValidator.validateWeeklyWindow(weekDay);
+    const errorMsg = validateWeeklyWindow(weekDay);
     if (errorMsg !== null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
