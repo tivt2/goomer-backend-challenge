@@ -6,6 +6,7 @@
     "test": "npx vitest",
     "docker:db": "docker compose up -d database",
     "docker:test": "docker compose run --rm --build test",
+    "docker:app": "npm run docker:db && docker compose up --build app",
     "build": "rm -rf ./dist && npx tsc",
     "start": "npm run build && node ./dist/index.js"
   },
